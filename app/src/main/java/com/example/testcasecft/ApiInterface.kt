@@ -11,20 +11,6 @@ import retrofit2.http.Query
 interface ApiInterface {
 
     @GET("{id}")
-    fun getInfo(@Path("id") id: String): Call<BankCardInfo>
+    suspend fun getInfo(@Path("id") id: String): BankCardInfo
 
-    companion object {
-
-        var BASE_URL = "https://lookup.binlist.net/"
-
-        fun create(): ApiInterface {
-
-            val retrofit = Retrofit.Builder()
-                .addConverterFactory(GsonConverterFactory.create())
-                .baseUrl(BASE_URL)
-                .build()
-            return retrofit.create(ApiInterface::class.java)
-
-        }
-    }
 }
