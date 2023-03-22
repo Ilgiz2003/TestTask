@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -242,6 +243,49 @@ class MainActivity : AppCompatActivity() {
     override fun onStop() {
         saveInputList(inputList)
         super.onStop()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        outState.putString("length",binding.length.text.toString())
+        outState.putString("lunh",binding.luhn.text.toString())
+        outState.putString("scheme",binding.scheme.text.toString())
+        outState.putString("type",binding.type.text.toString())
+        outState.putString("brand",binding.brand.text.toString())
+        outState.putString("prepaid",binding.prepaid.text.toString())
+        outState.putString("numeric",binding.numeric.text.toString())
+        outState.putString("alpha2",binding.alpha2.text.toString())
+        outState.putString("countryName",binding.countryName.text.toString())
+        outState.putString("emoji",binding.emoji.text.toString())
+        outState.putString("currency",binding.currency.text.toString())
+        outState.putString("latitude",binding.latitude.text.toString())
+        outState.putString("longitude",binding.longitude.text.toString())
+        outState.putString("bankName",binding.bankName.text.toString())
+        outState.putString("bankUrl",binding.bankUrl.text.toString())
+        outState.putString("bankPhone",binding.bankPhone.text.toString())
+        outState.putString("city",binding.city.text.toString())
+        super.onSaveInstanceState(outState)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
+        super.onRestoreInstanceState(savedInstanceState)
+
+        binding.length.text = savedInstanceState.getString("length")
+        binding.luhn.text = savedInstanceState.getString("lunh")
+        binding.scheme.text = savedInstanceState.getString("scheme")
+        binding.type.text = savedInstanceState.getString("type")
+        binding.brand.text = savedInstanceState.getString("brand")
+        binding.prepaid.text = savedInstanceState.getString("prepaid")
+        binding.numeric.text = savedInstanceState.getString("numeric")
+        binding.alpha2.text = savedInstanceState.getString("alpha2")
+        binding.countryName.text = savedInstanceState.getString("countryName")
+        binding.emoji.text = savedInstanceState.getString("emoji")
+        binding.currency.text = savedInstanceState.getString("currency")
+        binding.latitude.text = savedInstanceState.getString("latitude")
+        binding.longitude.text = savedInstanceState.getString("longitude")
+        binding.bankName.text = savedInstanceState.getString("bankName")
+        binding.bankUrl.text = savedInstanceState.getString("bankUrl")
+        binding.bankPhone.text = savedInstanceState.getString("bankPhone")
+        binding.city.text = savedInstanceState.getString("city")
     }
 
 }
