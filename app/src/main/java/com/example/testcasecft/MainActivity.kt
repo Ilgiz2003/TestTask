@@ -1,6 +1,13 @@
 package com.example.testcasecft
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.MotionEvent
+import android.view.View
+import android.view.View.OnTouchListener
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import com.example.testcasecft.data_classes.BankCardInfo
@@ -16,7 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private val BASE_URL = "https://lookup.binlist.net/"
-
+    private var inputList = mutableListOf<Number>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -29,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
 
         val bankCardInfoApi = retrofit.create(ApiInterface::class.java)
-
+        setupAutoTextComplete()
 
         binding.getInformation.setOnClickListener {
             CoroutineScope(Dispatchers.IO).launch {
@@ -43,11 +50,33 @@ class MainActivity : AppCompatActivity() {
                 } catch (e: HttpException) {
                     null
                 }
+                Log.d("testLog", inputList.toString())
                 runOnUiThread {
+                    fillInputList(binding.editTextNumber)
                     fillFields(bankCardInfo, binding)
                 }
             }
         }
+
+        binding.bankUrl.setOnClickListener {
+            goToBankUrl(binding.bankUrl.text.toString().drop(5))
+        }
+        binding.bankPhone.setOnClickListener {
+            callBankTelephone(binding.bankPhone.text.toString().drop(7))
+        }
+        binding.latitude.setOnClickListener {
+            goToMaps(
+                binding.latitude.text.toString().drop(10),
+                binding.longitude.text.toString().drop(11)
+            )
+        }
+        binding.longitude.setOnClickListener {
+            goToMaps(
+                binding.latitude.text.toString().drop(10),
+                binding.longitude.text.toString().drop(11)
+            )
+        }
+
     }
 
     private fun fillFields(bankCardInfo: BankCardInfo?, binding: ActivityMainBinding) {
@@ -116,8 +145,79 @@ class MainActivity : AppCompatActivity() {
         binding.city.text = binding.city.text.toString() + " " + bankCardInfo?.bank?.city.toString()
     }
 
+    private fun goToBankUrl(url: String) {
+        if (!url.endsWith("null")) {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse("http://$url"))
+            startActivity(browserIntent)
+        }
+    }
+
+    private fun callBankTelephone(telephone: String) {
+        if (!telephone.endsWith("null")) {
+            val callIntent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$telephone"))
+            startActivity(callIntent)
+        }
+    }
+
+    private fun goToMaps(latitude: String, longitude: String) {
+        if (latitude != "null" && longitude != "null") {
+            val mapIntent = Intent(
+                Intent.ACTION_VIEW,
+                Uri.parse("http://maps.google.co.in/maps?q=$latitude,$longitude")
+            )
+            mapIntent.setPackage("com.google.android.apps.maps")
+            startActivity(mapIntent)
+        }
+    }
+
     private fun isEditTextEmpty(editText: EditText): Boolean {
         return editText.text.toString().isEmpty()
+    }
+
+    private fun fillInputList(editText: EditText) {
+        if(!isEditTextEmpty(editText)){
+            if (inputList.size == 6) {
+                inputList.removeAt(5);
+            }
+            inputList.add(0, editText.text.toString().toInt())
+        }
+        binding.editTextNumber.setAdapter(
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                inputList
+            )
+        )
+
+    }
+
+    private fun setupAutoTextComplete() {
+        binding.editTextNumber.setAdapter(
+            ArrayAdapter(
+                this,
+                android.R.layout.simple_dropdown_item_1line,
+                inputList
+            )
+        )
+        binding.editTextNumber.threshold = 0
+        binding.editTextNumber.onFocusChangeListener =
+            View.OnFocusChangeListener { v, hasFocus ->
+                if (v.windowVisibility != View.INVISIBLE) {
+                    return@OnFocusChangeListener
+                }
+                if (hasFocus){
+                    binding.editTextNumber.showDropDown()
+                }
+                else{
+                    binding.editTextNumber.dismissDropDown()
+                }
+            }
+        binding.editTextNumber.setOnTouchListener(OnTouchListener { v, event ->
+            if (event.action == MotionEvent.ACTION_DOWN) {
+                binding.editTextNumber.showDropDown()
+            }
+            false
+        })
     }
 
 }
