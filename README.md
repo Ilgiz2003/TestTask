@@ -16,5 +16,7 @@
 :-------------------------:|:-------------------------:
 <img src="https://github.com/Ilgiz2003/TestTask/blob/main/app/src/main/res/drawable/screenshot1.jpg" width="250" height="500" />  |  <img src="https://github.com/Ilgiz2003/TestTask/blob/main/app/src/main/res/drawable/screenshot2.jpg" width="250" height="500" />
 
+Кнопка "Получить данные" находится ниже.
+
 
 
