@@ -1,5 +1,6 @@
 package com.example.testcasecft
 
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -28,6 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        getSavedInputList()
 
         val retrofit = Retrofit.Builder()
             .baseUrl(BASE_URL)
@@ -175,7 +177,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun fillInputList(editText: EditText) {
-        if(!isEditTextEmpty(editText)){
+        if (!isEditTextEmpty(editText) && editText.text.toString().toInt() !in inputList) {
             if (inputList.size == 6) {
                 inputList.removeAt(5);
             }
@@ -205,10 +207,9 @@ class MainActivity : AppCompatActivity() {
                 if (v.windowVisibility != View.INVISIBLE) {
                     return@OnFocusChangeListener
                 }
-                if (hasFocus){
+                if (hasFocus) {
                     binding.editTextNumber.showDropDown()
-                }
-                else{
+                } else {
                     binding.editTextNumber.dismissDropDown()
                 }
             }
@@ -218,6 +219,29 @@ class MainActivity : AppCompatActivity() {
             }
             false
         })
+    }
+
+    private fun getSavedInputList() {
+        val sharedPreferences = getSharedPreferences("savePrefs", Context.MODE_PRIVATE)
+        val set = sharedPreferences.getStringSet("set", emptySet())
+        val oldList = mutableListOf<Number>()
+        if (set != null) {
+            oldList.addAll(set.map { it.toInt() })
+        }
+        inputList = oldList
+    }
+
+    private fun saveInputList(inputList: MutableList<Number>) {
+        val set = inputList.map { it.toString() }.toSet()
+        val sharedPreferences = getSharedPreferences("savePrefs", Context.MODE_PRIVATE)
+        val editor = sharedPreferences.edit()
+        editor.putStringSet("set", set)
+        editor.apply()
+    }
+
+    override fun onStop() {
+        saveInputList(inputList)
+        super.onStop()
     }
 
 }
